@@ -16,7 +16,6 @@ const MapContainer = ({ beaconList }) => {
 
   const [mapCenter, setMapCenter] = useState(defaultCenter);
   const [activeBeacon, setActiveBeacon] = useState(null);
-  const [mapLoaded, setMapLoaded] = useState(false);
   const mapRef = useRef(null);
 
   const handleBeaconClick = (id) => {
@@ -42,7 +41,6 @@ const MapContainer = ({ beaconList }) => {
             center={mapCenter}
             onLoad={(map) => {
               mapRef.current = map;
-              setMapLoaded(true);
             }}
           >
             {beaconList.map((beacon, index) => (
@@ -57,12 +55,14 @@ const MapContainer = ({ beaconList }) => {
               />
             ))}
           </GoogleMap>
+          <div className="absolute top-0 left-0 m-4 z-10">
+            {/* <Link to="/createbeacon"> */}
+              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Create Beacon
+              </button>
+            {/* </Link> */}
+          </div>
         </div>
-        <Link to="/createbeacon" className="absolute top-0 left-0 m-4 z-10">
-          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            Create Beacon
-          </button>
-        </Link>
       </LoadScript>
     </div>
   );
