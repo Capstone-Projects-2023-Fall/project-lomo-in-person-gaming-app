@@ -1,9 +1,6 @@
 import logo from "./logo.svg";
 import "./App.css";
-import HomePage from "./HomePage";
-import Profile from "./Profile";
-import BeaconInfoWindow from "./BeaconInfoWindow";
-import GameAPITest from "./GameAPITest";
+import HomePage from "./HomePage.js";
 
 function App() {
   

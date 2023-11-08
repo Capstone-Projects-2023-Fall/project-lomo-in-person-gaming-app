@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { GoogleMap, LoadScript } from '@react-google-maps/api';
-import Beacon from './Beacon';
+import { Link } from 'react-router-dom';
+import Beacon from './Beacon.js';
 
 const MapContainer = ({ beaconList }) => {
   const mapStyles = {
@@ -31,28 +32,37 @@ const MapContainer = ({ beaconList }) => {
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
 
   return (
-    <div className='flex justify-center items-center h-screen'>
+    <div className='relative h-screen w-full'>
       <LoadScript googleMapsApiKey={apiKey}>
-        <GoogleMap
-          mapContainerStyle={mapStyles}
-          zoom={10}
-          center={mapCenter}
-          onLoad={(map) => {
-            mapRef.current = map;
-          }}
-        >
-          {beaconList.map((beacon, index) => (
-            <Beacon
-              key={index}
-              id={index}
-              activeBeacon={activeBeacon}
-              onBeaconClick={handleBeaconClick}
-              circleLat={beacon.circleLat}
-              circleLng={beacon.circleLng}
-              beaconInfo={beacon.beaconInfo}
-            />
-          ))}
-        </GoogleMap>
+        <div className='absolute top-0 left-0 w-full h-full'>
+          <GoogleMap
+            mapContainerStyle={mapStyles}
+            zoom={10}
+            center={mapCenter}
+            onLoad={(map) => {
+              mapRef.current = map;
+            }}
+          >
+            {beaconList.map((beacon, index) => (
+              <Beacon
+                key={index}
+                id={index}
+                activeBeacon={activeBeacon}
+                onBeaconClick={handleBeaconClick}
+                circleLat={beacon.circleLat}
+                circleLng={beacon.circleLng}
+                beaconInfo={beacon.beaconInfo}
+              />
+            ))}
+          </GoogleMap>
+          <div className="absolute top-0 left-0 m-4 z-10">
+            {/* <Link to="/createbeacon"> */}
+              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Create Beacon
+              </button>
+            {/* </Link> */}
+          </div>
+        </div>
       </LoadScript>
     </div>
   );
