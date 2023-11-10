@@ -28,7 +28,7 @@ services:
     pgsql:
         image: 'postgres:latest'
         ports:
-            - '5432:5432'
+            - '5433:5433'
         environment:
             POSTGRES_DB: env('DB_DATABASE')
             POSTGRES_USER: env('DB_USERNAME')
