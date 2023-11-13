@@ -39,4 +39,21 @@ class CommentControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertJson($comments->toArray());
     }
+
+    public function testCommentBroadcast()
+    {
+        Broadcast::shouldReceive('event')
+            ->once()
+            ->with(Mockery::type('App\Comment'));
+
+        $beacon = factory(Beacon::class)->create();
+        $user = factory(User::class)->create();
+
+        $response = $this->post("/api/beacons/{$beacon->id}/comments", [
+            'user_id' => $user->id,
+            'content' => 'Test comment'
+        ]);
+
+        $response->assertStatus(201);
+    }
 }
