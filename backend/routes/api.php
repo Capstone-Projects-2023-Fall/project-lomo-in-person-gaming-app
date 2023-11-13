@@ -22,4 +22,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
     Route::apiResource('beacons', BeaconController::class);
     Route::apiResource('users', UserController::class)->except('store');
+    Route::post('/beacons/{beacon}/comments', 'CommentController@store');
+    Route::get('/beacons/{beacon}/comments', 'CommentController@index');
+
+
 });
