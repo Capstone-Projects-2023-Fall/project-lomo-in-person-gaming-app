@@ -16,6 +16,22 @@ class Comment extends Model implements ShouldBroadcast
         'beacon_id', 'user_id', 'content',
     ];
 
+    // Format model to use uuid as primary key: Set uuid primary key to not increment
+    public $incrementing = false;
+
+    // Format model to use uuid as primary key: Set uuid primary key type to string instead of an integer
+    protected $keyType = 'string';
+
+    // Format model to use uuid as primary key: Automatically create a new uuid for primary key
+    public static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->id = Str::uuid();
+        });
+    }
+
     /**
      * Get the beacon that owns the comment.
      */
