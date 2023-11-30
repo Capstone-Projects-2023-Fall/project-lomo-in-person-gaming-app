@@ -70,6 +70,7 @@ const BeaconInfoWindow = ({ username, startTime, endTime, gameTitle, miscInfo, g
                 </span>
               </div>
               <div className="text-xl">
+                <p>{address}</p>
                 <p>{address.name}</p>
                 <p>{address.address}</p>
               </div>

@@ -36,7 +36,7 @@ const MapContainer = ({ beaconList }) => {
     <div className='absolute top-70 left-0 w-full'>
       <GoogleMap
         mapContainerStyle={mapStyles}
-        zoom={10}
+        zoom={13}
         center={mapCenter}
         onLoad={(map) => {
           mapRef.current = map;
@@ -49,9 +49,9 @@ const MapContainer = ({ beaconList }) => {
             id={index}
             activeBeacon={activeBeacon}
             onBeaconClick={handleBeaconClick}
-            circleLat={beacon.circleLat}
-            circleLng={beacon.circleLng}
-            beaconInfo={beacon.beaconInfo}
+            circleLat={beaconList[index].coordinates.coordinates[1]}
+            circleLng={beaconList[index].coordinates.coordinates[0]}
+            beaconInfo={beacon}
           />
         ))}
       </GoogleMap>
