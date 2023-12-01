@@ -196,6 +196,13 @@ export PROJECT_NAME=project-lomo-in-person-gaming-app && export ORG_NAME=Capston
 <table>
     <tr>
         <td align="center">
+            <a href="https://github.com/Snarr">
+                <img src="https://avatars.githubusercontent.com/u/20634143?v=4" width="100;" alt="Snarr"/>
+                <br />
+                <sub><b>Jacob Snarr</b></sub>
+            </a>
+        </td>
+        <td align="center">
             <a href="https://github.com/JonathanAltenburg">
                 <img src="https://avatars.githubusercontent.com/u/144725445?v=4" width="100;" alt="JonathanAltenburg"/>
                 <br />
