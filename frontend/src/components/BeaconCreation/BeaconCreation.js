@@ -8,17 +8,18 @@ import Echo from 'laravel-echo';
 // import { useHistory } from 'react-router-dom'
 import useEchoStore from "../../useEchoStore.js";
 
-import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
-import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete";
-// import {
-//     Combobox,
-//     ComboboxInput,
-//     ComboboxPopover,
-//     ComboboxList,
-//     ComboboxOption,
-// } from "@reach/combobox";
-// import "@reach/combobox/styles.css"
-
+import { GoogleMap, useLoadScript, Marker} from "@react-google-maps/api";
+import usePlacesAutocomplete, { getGeocode, getLatLng } 
+    from "use-places-autocomplete";
+ import {
+     Combobox,
+     ComboboxInput,
+     ComboboxPopover,
+     ComboboxList,
+     ComboboxOption,
+ } from "@reach/combobox";
+ import "@reach/combobox/styles.css"
+import {Places} from "../places.js";
 
 function BeaconCreation({ beaconList }) {
     const [game, setGame] = useState(""); //game_title
@@ -33,48 +34,48 @@ function BeaconCreation({ beaconList }) {
     const [statusCode, setStatusCode] = useState(null);
     const { authUser, userId } = useAuth();
 
-    const config = useLoadScript({
-        googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-        libraries: ["places"],
-    });
-
-    // const PlacesAutocomplete = ({ setSelected }) => {
-    //     const {
-    //         ready,
-    //         value,
-    //         setValue,
-    //         suggestions: { status, data },
-    //         clearSuggestions,
-    //     } = usePlacesAutocomplete();
-
-    //     const handleSelect = async (value) => {
-    //         setValue(location, false);
-    //         clearSuggestions();
-
-    //         const results = await getGeocode({ location });
-    //         const { lat, lng } = await getLatLng(results[0]);
-    //         setSelected({ lat, lng });
-    //     }
-    //     return (
-    //         <Combobox onSelect={handleSelect}>
-    //             <ComboboxInput
-    //                 value={location}
-    //                 onChange={(event) => setLocation(event.target.value)}
-    //                 disabled={!ready}
-    //                 className="combobox-input"
-    //                 placeholder="Search address"
-    //             />
-    //             <ComboboxPopover>
-    //                 <ComboboxList>
-    //                     {status === "OK" &&
-    //                         data.map(({ place_id, description }) => (
-    //                             <ComboboxOption key={place_id} value={description} />
-    //                         ))}
-    //                 </ComboboxList>
-    //             </ComboboxPopover>
-    //         </Combobox>
-    //     );
-    // };
+    // const {isLoaded} = useLoadScript({
+    //    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+    //    libraries: ["places"],
+    // });
+        // const PlacesAutocomplete = ({ setSelected }) => {
+        //     const {
+        //         ready,
+        //         value,
+        //         setValue,
+        //         suggestions: { status, data },
+        //         clearSuggestions,
+        //     } = usePlacesAutocomplete();
+   
+        //     const handleSelect = async (value) => {
+        //         setValue(address, false);
+        //         clearSuggestions();
+   
+        //         const results = await getGeocode({address});
+        //         const { lat, lng } = await getLatLng(results[0]);
+        //         setSelected({ lat, lng });
+        //     }
+        //     return (
+        //         <Combobox onSelect={handleSelect}>
+        //             <ComboboxInput
+        //                 value={address}
+        //                 onChange={(event) => setPlaceName(event.target.value)}
+        //                 disabled={!ready}
+        //                 className="combobox-input"
+        //                 placeholder="Search address"
+        //             />
+        //             <ComboboxPopover>
+        //                 <ComboboxList>
+        //                     {status === "OK" &&
+        //                         data.map(({ place_id, description }) => (
+        //                             <ComboboxOption key={place_id} value={description} />
+        //                         ))}
+        //                 </ComboboxList>
+        //             </ComboboxPopover>
+        //         </Combobox>
+        //     );
+        // };
+     
     // const laravelEcho = useEchoStore((state) => state.laravelEcho);
 
     // {  DataFields
@@ -151,6 +152,8 @@ function BeaconCreation({ beaconList }) {
             longitude: "-75.155562"
         };
         console.log(data);
+
+        
 
         // const beaconListData = {
         //     circleLat: data.latitude,
@@ -408,17 +411,11 @@ function BeaconCreation({ beaconList }) {
             </div>
 
             <div className="flex-col w-full p-1 md:p-2">
-                Location:
-                <input
-                    value={placeName}
-                    onChange={(e) => { setPlaceName(e.target.value) }}
-                    placeholder="Where are we playing?"
-                    className="p-1 border-teal-100 border-2 rounded w-full"
-                />
+                <Places setSelected={setSelected} />
             </div>
 
             <div className='font-bold text-2xl border-b-4 border-b-sky-950 py-2 w-full mb-2'>
-                When
+                
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 place-content-center">
@@ -484,3 +481,15 @@ export default BeaconCreation;
             }}
           />
           */
+
+/*
+Location:
+                <input
+                    value={placeName}
+                    onChange={(e) => { setPlaceName(e.target.value) }}
+                    placeholder="Where are we playing?"
+                    className="p-1 border-teal-100 border-2 rounded w-full"
+                />
+
+PUT BACK IN IF GOOGLEMAPS NO WORK
+*/
