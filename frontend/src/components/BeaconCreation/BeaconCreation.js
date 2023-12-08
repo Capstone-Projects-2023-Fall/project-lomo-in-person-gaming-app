@@ -10,7 +10,6 @@ import { useLoadScript } from "@react-google-maps/api";
 import GetGameByName from "./GetGameByName.js";
 
 function BeaconCreation({ beaconList }) {
-  const [game, setGame] = useState(""); //game_title
   const [gameConsole, setConsole] = useState(""); //console
   const [description, setDesc] = useState(""); //description
   const [placeName, setPlaceName] = useState(""); //place_name
@@ -22,7 +21,6 @@ function BeaconCreation({ beaconList }) {
   const [timeTo, setTo] = useState(""); //end_date_time
   const [totalControllers, setTotalControllers] = useState(""); //controllers_wanted
   const [hostControllers, setHostControllers] = useState(""); // how many controllers the host has
-  const [statusCode, setStatusCode] = useState(null);
   const { authUser, userId } = useAuth();
   const [autocompleteResults, setAutocompleteResults] = useState([]);
   const [gameName, setGameName] = useState("");
@@ -215,22 +213,24 @@ function BeaconCreation({ beaconList }) {
         </div>
         <div className="flex-col w-full p-1 md:p-2">
           Controllers:
-          <input
-            value={totalControllers}
-            onChange={(e) => {
-              setTotalControllers(e.target.value);
-            }}
-            placeholder="How many controllers are needed?"
-            className="p-1 border-teal-100 border-2 rounded w-full"
-          />
-          <input
-            value={hostControllers}
-            onChange={(e) => {
-              setHostControllers(e.target.value);
-            }}
-            placeholder="How many controllers do you have?"
-            className="p-1 mt-2 border-teal-100 border-2 rounded w-full"
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 space-x-2">
+            <input
+              value={totalControllers}
+              onChange={(e) => {
+                setTotalControllers(e.target.value);
+              }}
+              placeholder="How many controllers are needed?"
+              className="p-1 border-teal-100 border-2 rounded w-full"
+            />
+            <input
+              value={hostControllers}
+              onChange={(e) => {
+                setHostControllers(e.target.value);
+              }}
+              placeholder="How many controllers do you have?"
+              className="p-1 border-teal-100 border-2 rounded w-full"
+            />
+          </div>
         </div>
       </div>
 
