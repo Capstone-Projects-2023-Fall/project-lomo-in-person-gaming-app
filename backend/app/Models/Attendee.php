@@ -35,10 +35,6 @@ class Attendee extends Model
         'isHost'
     ];
 
-    protected $guarded = [
-        'isHost'
-    ];
-
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

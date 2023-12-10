@@ -8,7 +8,7 @@ const GetBeaconById = (id) => {
   useEffect(() => {
     const fetchData = async () => {
       // define url and headers
-      let url = `https://hku6k67uqeuabts4pgtje2czy40gldpa.lambda-url.us-east-1.on.aws/api/beacons/${id}`;
+      let url = `http://localhost/api/beacons/${id}`;
       let options = {
         method: "GET",
         headers: {
@@ -28,14 +28,7 @@ const GetBeaconById = (id) => {
 
         // Parse the response as JSON and return it
         const data = await response.json();
-        console.log("single beacon response status: ", response.status);
-        console.log("single beacon data retrieved: ", data.data);
-        const combinedData = {
-          ...data.data[0],
-          attendees: data.data[1].attendees
-        };
-
-        setBeaconData(combinedData);
+        setBeaconData(data.data);
       } catch (error) {
         console.error("Error fetching data:", error);
         // You might want to throw the error or handle it in some way
