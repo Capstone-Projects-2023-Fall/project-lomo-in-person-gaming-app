@@ -10,11 +10,10 @@ import { useLoadScript } from "@react-google-maps/api";
 import GetGameByName from "../BeaconCreation/GetGameByName.js";
 import GetBeaconById from './GetBeaconById.js';
 
-const ConfirmationModal = ({ isOpen, message, onConfirm, onCancel }) => {
+const ConfirmationModal = ({ message, onConfirm, onCancel }) => {
     return (
         <div
-            className={`fixed inset-0 bg-sky-900 bg-opacity-50 flex items-center justify-center ${isOpen ? 'visible' : 'invisible'
-                }`}
+            className={`fixed inset-0 bg-sky-900 bg-opacity-50 flex items-center justify-center`}
         >
             <div className="bg-white p-4 rounded shadow-lg">
                 <p className="mb-4">{message}</p>
@@ -22,7 +21,9 @@ const ConfirmationModal = ({ isOpen, message, onConfirm, onCancel }) => {
                     <button className='border-2 border-sky-900 rounded p-2' onClick={onCancel}>
                         Cancel
                     </button>
-                    <button className='bg-sky-900 text-white rounded p-2' onClick={onConfirm}>Confirm</button>
+                    <button className='bg-sky-900 text-white rounded p-2' onClick={onConfirm}>
+                        Confirm
+                    </button>
                 </div>
             </div>
         </div>
@@ -33,6 +34,7 @@ const ModifyBeacon = () => {
     const queryParams = new URLSearchParams(useLocation().search);
     const beaconId = queryParams.get("beacon_id");
 
+    const [isModalOpen, setIsModalOpen] = useState(null);
     const oldBeaconData = GetBeaconById(beaconId);
     const { authUser, userId } = useAuth();
     const [gameName, setGameName] = useState(oldBeaconData.game_title);
@@ -47,12 +49,14 @@ const ModifyBeacon = () => {
     const [latitude, setLatitude] = useState(oldBeaconData.latitude);
     const [longitude, setLongitude] = useState(oldBeaconData.longitude);
     const [timeFrom, setFrom] = useState(oldBeaconData.start_date_time);
-    const [timeTo, setTo] = useState(oldBeaconData.oldBeaconData.end_date_time);
+    const [timeTo, setTo] = useState(oldBeaconData.end_date_time);
     const [autocompleteResults, setAutocompleteResults] = useState([]);
-    const [selectedGame, setSelectedGame] = useState(null);
+    const [selectedGame, setSelectedGame] = useState({
+        name:'',
+        image:''
+    });
     const [clickedGameId, setClickedGameId] = useState(null);
     const [isInputFocused, setInputFocused] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleInputChange = (e) => {
         const gameNameValue = e.target.value;
@@ -105,7 +109,10 @@ const ModifyBeacon = () => {
     }
 
     const handleOpenModal = () => {
+        console.log(isModalOpen);
+        console.log('Modal opened');
         setIsModalOpen(true);
+        console.log(isModalOpen);
     };
 
     const handleCloseModal = () => {
@@ -141,15 +148,17 @@ const ModifyBeacon = () => {
     };
 
     const handleCancelAction = () => {
+        console.log(isModalOpen);
         console.log('Canceled action');
-        handleCloseModal();
+        setIsModalOpen(false);
+        console.log(isModalOpen);
     };
 
     function onClose() {
         let data = {
             host_id: userId,
-            game_title: selectedGame.name,
-            game_image: selectedGame.image,
+            game_title: (selectedGame.name || oldBeaconData.game_title),
+            game_image: (selectedGame.image || oldBeaconData.game_image ),
             console: gameConsole,
             description: description,
             start_date_time: timeFrom,
@@ -166,7 +175,7 @@ const ModifyBeacon = () => {
 
         // define url and headers
         let url =
-            "https://hku6k67uqeuabts4pgtje2czy40gldpa.lambda-url.us-east-1.on.aws/api/beacons";
+            `https://hku6k67uqeuabts4pgtje2czy40gldpa.lambda-url.us-east-1.on.aws/api/beacons/${beaconId}`;
         let options = {
             method: "PATCH",
             headers: {
@@ -200,6 +209,7 @@ const ModifyBeacon = () => {
                 <div className="flex-col w-full p-1 md:p-2">
                     Game Name:
                     <input
+                        defaultValue={oldBeaconData.game_title}
                         value={gameName}
                         onChange={handleInputChange}
                         onFocus={() => setInputFocused(true)}
@@ -244,6 +254,7 @@ const ModifyBeacon = () => {
                 <div className="flex-col w-full p-1 md:p-2">
                     Game Console:
                     <input
+                        defaultValue={oldBeaconData.console}
                         value={gameConsole}
                         onChange={(e) => {
                             setConsole(e.target.value);
@@ -257,6 +268,7 @@ const ModifyBeacon = () => {
             <div className="flex-col w-full p-1 md:p-2">
                 Description:
                 <textarea
+                    defaultValue={oldBeaconData.description}
                     value={description}
                     onChange={(e) => {
                         setDesc(e.target.value);
@@ -270,6 +282,7 @@ const ModifyBeacon = () => {
                 <div className="flex-col w-full p-1 md:p-2">
                     Players:
                     <input
+                        defaultValue={oldBeaconData.players_wanted}
                         value={players}
                         onChange={(e) => {
                             setPlayers(e.target.value);
@@ -282,6 +295,7 @@ const ModifyBeacon = () => {
                     Controllers:
                     <div className="grid grid-cols-1 md:grid-cols-2 space-x-2">
                         <input
+                            defaultValue={oldBeaconData.controllers_wanted}
                             value={totalControllers}
                             onChange={(e) => {
                                 setTotalControllers(e.target.value);
@@ -290,6 +304,7 @@ const ModifyBeacon = () => {
                             className="p-1 border-teal-100 border-2 rounded w-full"
                         />
                         <input
+                            defaultValue={oldBeaconData.controllers_brought}
                             value={hostControllers}
                             onChange={(e) => {
                                 setHostControllers(e.target.value);
@@ -348,13 +363,14 @@ const ModifyBeacon = () => {
                     onClick={handleOpenModal}
                 >
                     Delete Beacon
-                    <ConfirmationModal
-                        isOpen={isModalOpen}
-                        message="Are you sure you want to delete this beacon?"
-                        onConfirm={handleConfirmAction}
-                        onCancel={handleCancelAction}
-                    />
                 </button>
+                {isModalOpen && (
+                        <ConfirmationModal
+                            message="Are you sure you want to delete this beacon?"
+                            onConfirm={handleConfirmAction}
+                            onCancel={handleCancelAction}
+                        />
+                    )}
                 <button
                     className="font-bold  bg-teal-500 py-1 px-1 rounded"
                     onClick={onClose}
