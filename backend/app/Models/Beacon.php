@@ -68,4 +68,9 @@ class Beacon extends Model
         'start_date_time' => 'datetime',
         'end_date_time' => 'datetime',
     ];
+
+    public function attendees()
+    {
+        return $this->hasMany(Attendee::class, 'beacon_id');
+    }
 }
