@@ -214,6 +214,16 @@ function App() {
               }
             />
             <Route
+              path="/editbeacon/"
+              element={
+                isLoggedIn ? (
+                  <BeaconApplication beaconList={beaconList} />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
+            <Route
               path="/"
               element={
                 isLoggedIn ? (
