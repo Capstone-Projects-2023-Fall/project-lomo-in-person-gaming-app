@@ -155,7 +155,7 @@ function App() {
   }, [isLoggedIn]);
 
   return (
-    <div className="App bg-gradient-to-b from-sky-500 to-teal-600 bg-scroll h-min-full h-screen">
+    <div className="App bg-gradient-to-b from-sky-500 to-teal-600 min-h-screen h-full pb-5">
       {showModal && (
         <div className="fixed z-10 inset-0 overflow-y-auto">
           <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
