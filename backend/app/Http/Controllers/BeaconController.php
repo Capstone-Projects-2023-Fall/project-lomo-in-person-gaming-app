@@ -47,7 +47,6 @@ class BeaconController extends Controller
             'isHost' => true
         ]);
 
-        Log::info('Attendee created', ['attendee' => $attendee]);
 
         // Transform JSON returned from database into the same JSON format request received
         // Remove coordinates field and replace it with latitude and longitude

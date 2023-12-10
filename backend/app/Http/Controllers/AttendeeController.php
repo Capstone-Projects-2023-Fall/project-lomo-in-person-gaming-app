@@ -11,7 +11,6 @@ use App\Http\Requests\AttendeeUpdateRequest;
 use App\Models\Beacon;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class AttendeeController extends Controller
 {
@@ -23,7 +22,6 @@ class AttendeeController extends Controller
     }
 
     public function store(AttendeePostRequest $request) {
-        Log::info('Store method called in AttendeeController', ['request' => $request->all()]);
         $attendee = new Attendee();
         $attendee->beacon_id = $request->beacon_id;
         if (!Beacon::find($attendee->beacon_id)) {
@@ -36,7 +34,6 @@ class AttendeeController extends Controller
         $attendee->controllers_brought = $request->controllers_brought;
         $attendee->isHost = $request->isHost;
         $attendee->save();
-        Log::info('Attendee saved', ['attendee' => $attendee]);
         event(new AttendeeCreate($attendee));
         return response()->json([
             'attendee' =>$attendee
