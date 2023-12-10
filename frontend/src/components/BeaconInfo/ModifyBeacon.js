@@ -66,14 +66,16 @@ const ModifyBeacon = () => {
   const [isInputFocused, setInputFocused] = useState(false);
 
   useEffect(() => {
-    if (oldBeaconData) {
+    if (oldBeaconData && oldBeaconData.attendees) {
       setGameName(oldBeaconData.game_title || "");
       setGameImg(oldBeaconData.game_image);
       setConsole(oldBeaconData.console || "");
       setDesc(oldBeaconData.description || "");
       setPlayers(oldBeaconData.players_wanted || "");
       setTotalControllers(oldBeaconData.controllers_wanted || "");
-      setHostControllers(oldBeaconData.host_controllers || "");
+      const hostAttendee = oldBeaconData.attendees.find(att => att.isHost);
+      setHostControllers(hostAttendee ? hostAttendee.controllers_brought.toString() : '0');
+      console.log("OLD STUFF: ", oldBeaconData);
       setPlaceName(oldBeaconData.place_name || "");
       setAddress(oldBeaconData.street_address || "");
       setLatitude(oldBeaconData.latitude || "");
