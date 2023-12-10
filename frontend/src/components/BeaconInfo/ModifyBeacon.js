@@ -370,4 +370,4 @@ const ModifyBeacon = () => {
     );
 }
 
-export default ModifyBeacon();
+export default ModifyBeacon;

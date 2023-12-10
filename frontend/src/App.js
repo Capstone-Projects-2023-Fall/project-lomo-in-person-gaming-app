@@ -190,9 +190,9 @@ function App() {
               path="/signup"
               element={isLoggedIn ? <Navigate to="/" /> : <Signup />}
             />
-            <Route 
-              path='/beaconlist' 
-              element={isLoggedIn ? <ListView /> : <Navigate to='/login' />} 
+            <Route
+              path='/beaconlist'
+              element={isLoggedIn ? <ListView /> : <Navigate to='/login' />}
             />
             <Route
               path="/createbeacon"
