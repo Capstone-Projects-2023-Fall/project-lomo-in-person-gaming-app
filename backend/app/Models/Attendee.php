@@ -31,12 +31,14 @@ class Attendee extends Model
     protected $fillable = [
         'beacon_id',
         'user_id',
-        'controllers_brought'
-    ];
-
-    protected $guarded = [
+        'controllers_brought',
         'isHost'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
     // protected static function booted(){
     //     static::created(function ($attendee) {
