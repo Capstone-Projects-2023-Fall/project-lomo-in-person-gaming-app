@@ -30,7 +30,7 @@ const GetBeaconById = (id) => {
         const data = await response.json();
         console.log("single beacon response status: ", response.status);
         console.log("single beacon data retrieved: ", data.data);
-        setBeaconList(data.data);
+        setBeaconList(data.data[0]);
       } catch (error) {
         console.error("Error fetching data:", error);
         // You might want to throw the error or handle it in some way
@@ -39,7 +39,7 @@ const GetBeaconById = (id) => {
     };
 
     fetchData();
-  }, [authUser]); // Add authUser as a dependency if needed
+  }, [id, authUser]); // Add authUser as a dependency if needed
 
   return beaconList;
 };
