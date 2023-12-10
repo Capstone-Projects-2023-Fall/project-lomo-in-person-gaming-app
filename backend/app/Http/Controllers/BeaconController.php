@@ -32,6 +32,7 @@ class BeaconController extends Controller
      */
     public function store(BeaconPostRequest $request)
     {
+        Log::info('Store method called in BeaconController', ['request' => $request->all()]);
         // Modify JSON request to fit in the database
         $beaconRequest = $request->all();
         $beaconRequest['coordinates'] = Point::makeGeodetic($beaconRequest['latitude'], $beaconRequest['longitude']);
@@ -46,7 +47,10 @@ class BeaconController extends Controller
             'beacon_id' => $beacon->id,
             'user_id' => $beacon->host_id,
             'controllers_brought' => $beaconRequest['controllers_brought'],
+            'isHost' => true
         ]);
+
+        Log::info('Attendee created', ['attendee' => $attendee]);
 
         // Transform JSON returned from database into the same JSON format request received
         // Remove coordinates field and replace it with latitude and longitude
@@ -64,13 +68,27 @@ class BeaconController extends Controller
      */
     public function show(string $beacon_id)
     {
-        $beaconInfo = array();
-        $beacon = Beacon::find($beacon_id);
-        array_push($beaconInfo, $beacon);
-        $attendeeTable = DB::table('attendees')->where('beacon_id', $beacon_id)->get(['user_id', 'controllers_brought']);
-        $joinTables = DB::table('attendees')->select('attendees.user_id', 'users.username', 'users.avatar', 'attendees.controllers_brought')
-            ->join('users', 'users.id', '=', 'attendees.user_id')->where('beacon_id', $beacon_id)->get();
-        array_push($beaconInfo, response()->json(['attendees' => $joinTables], 200)->getData());
+        
+        $beacon = Beacon::with(['attendees' => function ($query) {
+            $query->select('user_id', 'beacon_id', 'controllers_brought', 'isHost');
+        }])->find($beacon_id);
+    
+        if (!$beacon) {
+            return response()->json(['error' => 'Beacon not found'], 404);
+        }
+        
+        $beaconInfo = $beacon->toArray();
+
+        $beaconInfo['attendees'] = $beacon->attendees->map(function ($attendee) {
+            return [
+                'user_id' => $attendee->user_id,
+                'username' => $attendee->user->username,
+                'avatar' => $attendee->user->avatar,
+                'controllers_brought' => $attendee->controllers_brought,
+                'isHost' => $attendee->isHost,
+            ];
+        });
+    
         return response()->json(['data' => $beaconInfo], 200);
     }
 
