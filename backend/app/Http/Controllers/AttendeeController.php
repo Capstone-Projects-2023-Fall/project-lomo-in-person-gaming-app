@@ -10,6 +10,7 @@ use App\Http\Requests\AttendeeUpdateRequest;
 use App\Models\Beacon;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AttendeeController extends Controller
 {
@@ -21,6 +22,7 @@ class AttendeeController extends Controller
     }
 
     public function store(AttendeePostRequest $request) {
+        Log::info('Store method called in AttendeeController', ['request' => $request->all()]);
         $attendee = new Attendee();
         $attendee->beacon_id = $request->beacon_id;
         if (!Beacon::find($attendee->beacon_id)) {
@@ -31,7 +33,9 @@ class AttendeeController extends Controller
             return response()->json(['error' => 'User not found'], 404);
         }
         $attendee->controllers_brought = $request->controllers_brought;
+        $attendee->isHost = $request->isHost;
         $attendee->save();
+        Log::info('Attendee saved', ['attendee' => $attendee]);
         event(new AttendeeCreate($attendee));
         return response()->json([
             'attendee' =>$attendee
@@ -74,7 +78,8 @@ class AttendeeController extends Controller
         $validatedData = $request->validate([
             'beacon_id' => 'required|string',
             'user_id' => 'required|string',
-            'controllers_brought' => 'required|integer'
+            'controllers_brought' => 'required|integer',
+            'isHost' => 'required|boolean'
         ]);
         $attendee = DB::table('attendees')->where(['beacon_id' => $request->beacon_id, 'user_id' => $request->user_id])->get();
         $attendee->beacon_id = $request->beacon_id;
