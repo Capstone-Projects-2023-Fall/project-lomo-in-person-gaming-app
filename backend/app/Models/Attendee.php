@@ -39,6 +39,11 @@ class Attendee extends Model
         'isHost'
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     // protected static function booted(){
     //     static::created(function ($attendee) {
     //         BeaconDisplayUserInfo::dispatch($attendee);

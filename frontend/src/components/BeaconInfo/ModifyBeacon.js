@@ -43,6 +43,7 @@ const ModifyBeacon = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(null);
   const oldBeaconData = GetBeaconById(beaconId);
+  console.log("OLD STUFF: ", oldBeaconData);
   const { authUser, userId } = useAuth();
   const [gameName, setGameName] = useState("");
   const [gameImg, setGameImg] = useState("");
@@ -75,7 +76,6 @@ const ModifyBeacon = () => {
       setTotalControllers(oldBeaconData.controllers_wanted || "");
       const hostAttendee = oldBeaconData.attendees.find(att => att.isHost);
       setHostControllers(hostAttendee ? hostAttendee.controllers_brought.toString() : '0');
-      console.log("OLD STUFF: ", oldBeaconData);
       setPlaceName(oldBeaconData.place_name || "");
       setAddress(oldBeaconData.street_address || "");
       setLatitude(oldBeaconData.latitude || "");
