@@ -19,6 +19,7 @@ return new class extends Migration {
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->integer('controllers_brought')->nullable();
+            $table->boolean('isHost')->default(false);
         });
     }
 
