@@ -21,9 +21,10 @@ class AttendeePostRequest extends FormRequest
      */
     public function rules() {
         return [
-            'beacon_id' => 'required',
-            'user_id' => 'required',
-            'controllers_brought'
+            'beacon_id' => 'required|string|exists:beacons,id',
+            'user_id' => 'required|string|exists:users,id',
+            'controllers_brought' => 'required|integer|gte:0',
+            'isHost' => 'required|boolean'
         ];
     }
 
