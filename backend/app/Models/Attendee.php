@@ -31,8 +31,17 @@ class Attendee extends Model
     protected $fillable = [
         'beacon_id',
         'user_id',
-        'controllers_brought'
+        'controllers_brought',
+        'isHost'
     ];
+
+    /**
+     * Get the user that the attendee refers to.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
     // protected static function booted(){
     //     static::created(function ($attendee) {
