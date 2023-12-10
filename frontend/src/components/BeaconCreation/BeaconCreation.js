@@ -9,7 +9,8 @@ import LocationSearch from "./LocationSearch.js";
 import { useLoadScript } from "@react-google-maps/api";
 import GetGameByName from "./GetGameByName.js";
 
-function BeaconCreation({ beaconList }) {
+function BeaconCreation() {
+  const [game, setGame] = useState(""); //game_title
   const [gameConsole, setConsole] = useState(""); //console
   const [description, setDesc] = useState(""); //description
   const [placeName, setPlaceName] = useState(""); //place_name
@@ -213,24 +214,22 @@ function BeaconCreation({ beaconList }) {
         </div>
         <div className="flex-col w-full p-1 md:p-2">
           Controllers:
-          <div className="grid grid-cols-1 md:grid-cols-2 space-x-2">
-            <input
-              value={totalControllers}
-              onChange={(e) => {
-                setTotalControllers(e.target.value);
-              }}
-              placeholder="How many controllers are needed?"
-              className="p-1 border-teal-100 border-2 rounded w-full"
-            />
-            <input
-              value={hostControllers}
-              onChange={(e) => {
-                setHostControllers(e.target.value);
-              }}
-              placeholder="How many controllers do you have?"
-              className="p-1 border-teal-100 border-2 rounded w-full"
-            />
-          </div>
+          <input
+            value={totalControllers}
+            onChange={(e) => {
+              setTotalControllers(e.target.value);
+            }}
+            placeholder="How many are needed?"
+            className="p-1 border-teal-100 border-2 rounded w-full"
+          />
+          <input
+            value={hostControllers}
+            onChange={(e) => {
+              setHostControllers(e.target.value);
+            }}
+            placeholder="How many do you have?"
+            className="p-1 mt-2 border-teal-100 border-2 rounded w-full"
+          />
         </div>
       </div>
 
