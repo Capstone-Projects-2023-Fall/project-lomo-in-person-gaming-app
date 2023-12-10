@@ -1,37 +1,58 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs/AdapterDayjs.js";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker/DateTimePicker.js";
 import { useAuth } from "../../AuthContext.js";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { debounce } from "lodash";
-import LocationSearch from "./LocationSearch.js";
+import LocationSearch from "../BeaconCreation/LocationSearch.js";
 import { useLoadScript } from "@react-google-maps/api";
-import GetGameByName from "./GetGameByName.js";
+import GetGameByName from "../BeaconCreation/GetGameByName.js";
 import GetBeaconById from './GetBeaconById.js';
 
-const { authUser, userId } = useAuth();
+const ConfirmationModal = ({ isOpen, message, onConfirm, onCancel }) => {
+    return (
+        <div
+            className={`fixed inset-0 bg-sky-900 bg-opacity-50 flex items-center justify-center ${isOpen ? 'visible' : 'invisible'
+                }`}
+        >
+            <div className="bg-white p-4 rounded shadow-lg">
+                <p className="mb-4">{message}</p>
+                <div className="flex justify-center space-x-2">
+                    <button className='border-2 border-sky-900 rounded p-2' onClick={onCancel}>
+                        Cancel
+                    </button>
+                    <button className='bg-sky-900 text-white rounded p-2' onClick={onConfirm}>Confirm</button>
+                </div>
+            </div>
+        </div>
+    );
+};
 
-const editBeacon = () => {
+const ModifyBeacon = () => {
     const queryParams = new URLSearchParams(useLocation().search);
     const beaconId = queryParams.get("beacon_id");
 
     const oldBeaconData = GetBeaconById(beaconId);
-    const [formData, setFormData] = useState({
-        gameName: oldBeaconData.game_title,
-        gameImg: oldBeaconData.game_image,
-        gameConsole: oldBeaconData.console,
-        description: oldBeaconData.description,
-        players: oldBeaconData.players_wanted,
-        totalControllers: oldBeaconData.controllers_wanted,
-        hostControllers: oldBeaconData.host_controllers,
-        placeName: oldBeaconData.place_name,
-        address: oldBeaconData.street_address,
-        latitude: oldBeaconData.latitude,
-        longitude: oldBeaconData.longitude,
-        timeFrom: oldBeaconData.start_date_time,
-        timeEnd: oldBeaconData.end_date_time
-    });
+    const { authUser, userId } = useAuth();
+    const [gameName, setGameName] = useState(oldBeaconData.game_title);
+    const [gameImg, setGameImg] = useState(oldBeaconData.game_image);
+    const [gameConsole, setConsole] = useState(oldBeaconData.console);
+    const [description, setDesc] = useState(oldBeaconData.description);
+    const [players, setPlayers] = useState(oldBeaconData.players_wanted);
+    const [totalControllers, setTotalControllers] = useState(oldBeaconData.controllers_wanted);
+    const [hostControllers, setHostControllers] = useState(oldBeaconData.host_controllers);
+    const [placeName, setPlaceName] = useState(oldBeaconData.place_name);
+    const [address, setAddress] = useState(oldBeaconData.street_address);
+    const [latitude, setLatitude] = useState(oldBeaconData.latitude);
+    const [longitude, setLongitude] = useState(oldBeaconData.longitude);
+    const [timeFrom, setFrom] = useState(oldBeaconData.start_date_time);
+    const [timeTo, setTo] = useState(oldBeaconData.oldBeaconData.end_date_time);
+    const [autocompleteResults, setAutocompleteResults] = useState([]);
+    const [selectedGame, setSelectedGame] = useState(null);
+    const [clickedGameId, setClickedGameId] = useState(null);
+    const [isInputFocused, setInputFocused] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleInputChange = (e) => {
         const gameNameValue = e.target.value;
@@ -83,8 +104,49 @@ const editBeacon = () => {
         setTo("");
     }
 
+    const handleOpenModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+    };
+
+    const handleConfirmAction = async () => {
+        console.log('Confirmed action');
+
+        // define url and headers
+        let url = `https://hku6k67uqeuabts4pgtje2czy40gldpa.lambda-url.us-east-1.on.aws/api/beacons/${beaconId}`;
+        let options = {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                Authorization: "Bearer " + authUser,
+            },
+        };
+        try {
+            // make api call
+            const response = await fetch(url, options);
+
+            // Check if the response is ok
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            throw error;
+        }
+        handleCloseModal();
+    };
+
+    const handleCancelAction = () => {
+        console.log('Canceled action');
+        handleCloseModal();
+    };
+
     function onClose() {
-        setFormData({
+        let data = {
             host_id: userId,
             game_title: selectedGame.name,
             game_image: selectedGame.image,
@@ -99,7 +161,7 @@ const editBeacon = () => {
             players_wanted: players,
             controllers_wanted: totalControllers,
             controllers_brought: hostControllers
-        });
+        };
         console.log(data);
 
         // define url and headers
@@ -277,21 +339,27 @@ const editBeacon = () => {
             <div className="flex flex-row space-x-2 mt-3 justify-center">
                 <Link to="/">
                     <button className="font-bold relative bg-sky-400 py-1 px-1 rounded">
-                        Close
+                        Cancel
                     </button>
                 </Link>
 
                 <button
                     className="font-bold relative bg-red-500 py-1 px-1 rounded"
-                    onClick={clearForm}
+                    onClick={handleOpenModal}
                 >
-                    Clear
+                    Delete Beacon
+                    <ConfirmationModal
+                        isOpen={isModalOpen}
+                        message="Are you sure you want to delete this beacon?"
+                        onConfirm={handleConfirmAction}
+                        onCancel={handleCancelAction}
+                    />
                 </button>
                 <button
                     className="font-bold  bg-teal-500 py-1 px-1 rounded"
                     onClick={onClose}
                 >
-                    Confirm
+                    Save Changes
                 </button>
                 <div
                     className="font-bold relative py-1 px-1 rounded float-right"
@@ -302,101 +370,4 @@ const editBeacon = () => {
     );
 }
 
-const ConfirmationModal = ({ isOpen, message, onConfirm, onCancel }) => {
-    return (
-        <div
-            className={`fixed inset-0 bg-sky-900 bg-opacity-50 flex items-center justify-center ${isOpen ? 'visible' : 'invisible'
-                }`}
-        >
-            <div className="bg-white p-4 rounded shadow-lg">
-                <p className="mb-4">{message}</p>
-                <div className="flex justify-center space-x-2">
-                    <button className='border-2 border-sky-900 rounded p-2' onClick={onCancel}>
-                        Cancel
-                    </button>
-                    <button className='bg-sky-900 text-white rounded p-2' onClick={onConfirm}>Confirm</button>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-const deleteBeacon = (beaconId) => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
-    const handleOpenModal = () => {
-        setIsModalOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-    };
-
-    const handleConfirmAction = async () => {
-        console.log('Confirmed action');
-
-        // define url and headers
-        let url = `https://hku6k67uqeuabts4pgtje2czy40gldpa.lambda-url.us-east-1.on.aws/api/beacons/${beaconId}`;
-        let options = {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-                Authorization: "Bearer " + authUser,
-            },
-        };
-        try {
-            // make api call
-            const response = await fetch(url, options);
-
-            // Check if the response is ok
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            throw error;
-        }
-        handleCloseModal();
-    };
-
-    const handleCancelAction = () => {
-        console.log('Canceled action');
-        handleCloseModal();
-    };
-
-    return (
-        <div>
-            <button onClick={handleOpenModal}>Delete Beacon</button>
-
-            <ConfirmationModal
-                isOpen={isModalOpen}
-                message="Are you sure you want to delete this beacon?"
-                onConfirm={handleConfirmAction}
-                onCancel={handleCancelAction}
-            />
-        </div>
-    );
-
-
-    // return (
-    //     <div className='z-30 bg-teal-100 opacity-25 w-full h-full'>
-    //         <div id='confirmWindow' className='w-1/5 rounded mx-auto top-1/3 block text-center'>
-    //             <p classname='text-2xl font-bold p-3 text-sky-900'>Are you sure you want to delete this beacon?</p>
-    //             <div className='grid grid-cols-2 space-x-2 mx-auto'>
-    //                 <Link to="/">
-    //                     <button className="font-bold relative bg-red-800 p-1 rounded text-white">
-    //                         Cancel
-    //                     </button>
-    //                 </Link>
-    //                 <button className='font-bold relative bg-teal-600 p-1 rounded text-white'>
-    //                     Confirm
-    //                 </button>
-    //             </div>
-    //         </div>
-    //         <div id='deleteWindow' className='w-1/5 rounded mx-auto top-1/3 hidden text-center'>
-
-    //         </div>
-    //     </div>
-
-}
+export default ModifyBeacon();

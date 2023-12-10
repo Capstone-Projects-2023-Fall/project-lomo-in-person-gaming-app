@@ -18,6 +18,7 @@ import ListView from './components/BeaconInfo/ListBeaconInfo.js';
 import useEchoStore from "./useEchoStore.js";
 import Echo from "laravel-echo"; // eslint-disable-next-line
 import Pusher from "pusher-js"; // used behind the scenes by the new Echo function
+import ModifyBeacon from "./components/BeaconInfo/ModifyBeacon.js";
 
 function App() {
   const { isLoggedIn } = useAuth();
@@ -217,7 +218,7 @@ function App() {
               path="/editbeacon/"
               element={
                 isLoggedIn ? (
-                  <BeaconApplication beaconList={beaconList} />
+                  <ModifyBeacon />
                 ) : (
                   <Navigate to="/login" />
                 )
