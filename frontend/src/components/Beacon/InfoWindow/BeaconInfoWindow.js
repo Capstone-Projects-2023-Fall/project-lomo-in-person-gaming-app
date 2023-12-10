@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ControllerInfo from "./ControllerInfo.js";
 import Comments from "../../Comments.jsx";
 import BeaconApplication from "../../BeaconApplication/BeaconApplication.js";
@@ -6,6 +6,8 @@ import JoinedUsers from "./JoinedUsers.js";
 import GetUserById from "../../BeaconInfo/GetUserById.js";
 import { Link, useNavigate } from 'react-router-dom';
 import GetBeaconById from "../../BeaconInfo/GetBeaconById.js";
+import { useAuth } from "../../../AuthContext.js";
+
 import formatTime from "./formatTime.js";
 
 const BeaconInfoWindow = ({
@@ -28,6 +30,14 @@ const BeaconInfoWindow = ({
   const formattedText = description.replace(/\n/g, "<br>");
   const [showComments, setShowComments] = useState(false);
   const navigate = useNavigate();
+  const { userId } = useAuth();
+  const [isHost, setIsHost] = useState(false);
+
+  useEffect(() => {
+    const hostId = host_id;
+    const currentUser = userId;
+    setIsHost(hostId===currentUser);
+  });
   
   const handleCommentsClick = () => {
     setShowComments(!showComments);
@@ -40,6 +50,10 @@ const BeaconInfoWindow = ({
   const handleJoinClick = () => {
     navigate(`/joinbeacon/?beacon_id=${id}&game_title=${encodeURIComponent(game_title)}&host_username=${encodeURIComponent(hostInfo.username)}`);
   };
+
+  const handleEditClick = () => {
+    navigate(`/editbeacon/?beacon_id=${id}`);
+  }
 
   const startTime = formatTime(start_date_time);
   const endTime = formatTime(end_date_time);
@@ -78,9 +92,9 @@ const BeaconInfoWindow = ({
               <div className="pl-2">
                 <button
                   className="mr-8 mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                  onClick={handleJoinClick}
+                  onClick={isHost ? handleEditClick : handleJoinClick}
                 >
-                  Join!
+                  {isHost ? 'Edit Me' : 'Join!'}
                 </button>
               </div>
             </div>

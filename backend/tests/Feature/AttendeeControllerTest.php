@@ -65,7 +65,8 @@ class AttendeeControllerTest extends TestCase
         $attendee = [
             'beacon_id' => $beacon->id,
             'user_id' => $user->id,
-            'controllers_brought' => 3
+            'controllers_brought' => 3,
+            'isHost' => false
         ];
         $response = $this->postJson('/api/attendees', $attendee);
         $response->assertStatus(201);

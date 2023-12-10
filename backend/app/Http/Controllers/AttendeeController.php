@@ -32,6 +32,7 @@ class AttendeeController extends Controller
             return response()->json(['error' => 'User not found'], 404);
         }
         $attendee->controllers_brought = $request->controllers_brought;
+        $attendee->isHost = $request->isHost;
         $attendee->save();
         event(new AttendeeCreate($attendee));
         return response()->json([
