@@ -35,13 +35,9 @@ class Attendee extends Model
         'isHost'
     ];
 
-    /**
-     * Get the user that the attendee refers to.
-     */
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
+    protected $guarded = [
+        'isHost'
+    ];
 
     // protected static function booted(){
     //     static::created(function ($attendee) {

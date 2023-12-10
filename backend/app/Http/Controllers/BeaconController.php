@@ -34,10 +34,7 @@ class BeaconController extends Controller
     {
         Log::info('Store method called in BeaconController', ['request' => $request->all()]);
         // Modify JSON request to fit in the database
-        $beaconRequest = $request->all();
-        $beaconRequest['coordinates'] = Point::makeGeodetic($beaconRequest['latitude'], $beaconRequest['longitude']);
-        unset($beaconRequest['latitude']); // remove latitude field
-        unset($beaconRequest['longitude']); // remove longitude field
+        $beaconRequest = BeaconController::createCoordinatesField($request->all());
 
         // Insert new beacons into storage
         $beacon = Beacon::create($beaconRequest);
@@ -145,7 +142,9 @@ class BeaconController extends Controller
      */
     protected function createCoordinatesField(array $beaconArray): array
     {
-
+        $beaconArray['coordinates'] = Point::makeGeodetic($beaconArray['latitude'], $beaconArray['longitude']);
+        unset($beaconArray['latitude']); // remove latitude field
+        unset($beaconArray['longitude']); // remove longitude field
         return $beaconArray;
     }
 }
