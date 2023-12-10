@@ -32,7 +32,6 @@ class BeaconController extends Controller
      */
     public function store(BeaconPostRequest $request)
     {
-        Log::info('Store method called in BeaconController', ['request' => $request->all()]);
         // Modify JSON request to fit in the database
         $beaconRequest = BeaconController::createCoordinatesField($request->all());
 
