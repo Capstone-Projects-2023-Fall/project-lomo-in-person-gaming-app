@@ -4,7 +4,7 @@ import Comments from "../../Comments.jsx";
 import BeaconApplication from "../../BeaconApplication/BeaconApplication.js";
 import JoinedUsers from "./JoinedUsers.js";
 import GetUserById from "../../BeaconInfo/GetUserById.js";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from "react-router-dom";
 import GetBeaconById from "../../BeaconInfo/GetBeaconById.js";
 import { useAuth } from "../../../AuthContext.js";
 
@@ -24,7 +24,7 @@ const BeaconInfoWindow = ({
   controllers_wanted,
   place_name,
   street_address,
-  id
+  id,
 }) => {
   const [showControllerInfo, setShowControllerInfo] = useState(false);
   const formattedText = description.replace(/\n/g, "<br>");
@@ -32,13 +32,14 @@ const BeaconInfoWindow = ({
   const navigate = useNavigate();
   const { userId } = useAuth();
   const [isHost, setIsHost] = useState(false);
+  const [beaconNotFull, setBeaconNotFull] = useState(true);
 
   useEffect(() => {
     const hostId = host_id;
     const currentUser = userId;
-    setIsHost(hostId===currentUser);
+    setIsHost(hostId === currentUser);
   });
-  
+
   const handleCommentsClick = () => {
     setShowComments(!showComments);
   };
@@ -48,12 +49,16 @@ const BeaconInfoWindow = ({
   };
 
   const handleJoinClick = () => {
-    navigate(`/joinbeacon/?beacon_id=${id}&game_title=${encodeURIComponent(game_title)}&host_username=${encodeURIComponent(hostInfo.username)}`);
+    navigate(
+      `/joinbeacon/?beacon_id=${id}&game_title=${encodeURIComponent(
+        game_title
+      )}&host_username=${encodeURIComponent(hostInfo.username)}`
+    );
   };
 
   const handleEditClick = () => {
     navigate(`/editbeacon/?beacon_id=${id}`);
-  }
+  };
 
   const startTime = formatTime(start_date_time);
   const endTime = formatTime(end_date_time);
@@ -64,7 +69,7 @@ const BeaconInfoWindow = ({
   return (
     <div
       className="bg-white rounded-lg w-xl max-w-2xl mx-auto shadow-lg my-5 p-2 px-2 relative"
-      style={{ maxHeight: '690px', overflowY: 'auto' }}
+      style={{ maxHeight: "690px", overflowY: "auto" }}
     >
       <div className="relative">
         <button
@@ -83,22 +88,31 @@ const BeaconInfoWindow = ({
             <h1 className="text-2xl font-bold">{hostInfo.username}</h1>
           </div>
           <div className="mx-4">
-            <h2 className="text-xl border-b border-solid border-gray-400 w-[95%] font-semibold">Game</h2>
+            <h2 className="text-xl border-b border-solid border-gray-400 w-[95%] font-semibold">
+              Game
+            </h2>
             <div className="flex justify-between">
               <div>
                 <h2 className="text-xl mb-2">{game_title}</h2>
-                <p className="mb-2 text-xl" dangerouslySetInnerHTML={{ __html: formattedText }}></p>
+                <p
+                  className="mb-2 text-xl"
+                  dangerouslySetInnerHTML={{ __html: formattedText }}
+                ></p>
               </div>
-              <div className="pl-2">
-                <button
-                  className="mr-8 mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                  onClick={isHost ? handleEditClick : handleJoinClick}
-                >
-                  {isHost ? 'Edit Me' : 'Join!'}
-                </button>
-              </div>
+              {beaconNotFull && (
+                <div className="pl-2">
+                  <button
+                    className="mr-8 mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    onClick={isHost ? handleEditClick : handleJoinClick}
+                  >
+                    {isHost ? "Edit Me" : "Join!"}
+                  </button>
+                </div>
+              )}
             </div>
-            <p className="text-xl border-b border-solid border-gray-400 w-[95%] font-semibold">Console</p>
+            <p className="text-xl border-b border-solid border-gray-400 w-[95%] font-semibold">
+              Console
+            </p>
             <p className="mb-4 text-xl">{console}</p>
             <div className="mb-4">
               <div className="flex justify-between items-center text-xl">
@@ -121,7 +135,11 @@ const BeaconInfoWindow = ({
                 <p>{street_address}</p>
               </div>
             </div>
-            <JoinedUsers attendees={thisBeaconInfo[1]?.attendees || []} playersWanted={players_wanted} />
+            <JoinedUsers
+              attendees={thisBeaconInfo[1]?.attendees || []}
+              playersWanted={players_wanted}
+              setBeaconNotFull={setBeaconNotFull}
+            />
             {/* Old info section, keeping here just in case */}
             {/* <div className="flex items-center text-lg mb-2">
               <img
@@ -160,10 +178,11 @@ const BeaconInfoWindow = ({
       {/* {showControllerInfo && <ControllerInfo description={controllerInfo.description} onClose={handleInfoClick} />} */}
       <div className="flex justify-center">
         <button onClick={handleCommentsClick}>
-          <span className="text-xl">Comments</span> <span className="text-base">{showComments ? '▲' : '▼'}</span>
+          <span className="text-xl">Comments</span>{" "}
+          <span className="text-base">{showComments ? "▲" : "▼"}</span>
         </button>
       </div>
-      {showComments && <Comments beaconId={id} creatorId={host_id}/>}
+      {showComments && <Comments beaconId={id} creatorId={host_id} />}
     </div>
   );
 };
@@ -177,7 +196,7 @@ BeaconInfoWindow.defaultProps = {
   console: "console",
   address: {
     name: "address name",
-    address: "address location"
+    address: "address location",
   },
   gamePic: "images/catCry.jpg",
   userPic: "images/catWut.jpg",
@@ -188,28 +207,25 @@ BeaconInfoWindow.defaultProps = {
       {
         pic: "images/catMonster.jpg",
         username: "User 1",
-        controllers: 2
+        controllers: 2,
       },
       {
         pic: "images/catWut.jpg",
         username: "User 2",
-        controllers: 0
+        controllers: 0,
       },
       {
         pic: "images/catScream.jpg",
         username: "User 3",
-        controllers: 1
-      }
-    ]
+        controllers: 1,
+      },
+    ],
   },
   controllerInfo: {
     available: 1,
     wanted: 4,
-    description: [
-      "Controller Type 1",
-      "Controller Type 2"
-    ]
-  }
+    description: ["Controller Type 1", "Controller Type 2"],
+  },
 };
 
 export default BeaconInfoWindow;
