@@ -121,7 +121,7 @@ const BeaconInfoWindow = ({
                 <p>{street_address}</p>
               </div>
             </div>
-            <JoinedUsers attendees={thisBeaconInfo[1]?.attendees || []} playersWanted={players_wanted} />
+            <JoinedUsers attendees={thisBeaconInfo.attendees || []} playersWanted={players_wanted} />
             {/* Old info section, keeping here just in case */}
             {/* <div className="flex items-center text-lg mb-2">
               <img
