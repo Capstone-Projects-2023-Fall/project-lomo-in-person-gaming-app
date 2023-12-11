@@ -1,23 +1,17 @@
 [![Open in Codespaces](https://classroom.github.com/assets/launch-codespace-7f7980b617ed060a017424585567c406b6ee15c891e84e1186181d67ecf80aa0.svg)](https://urban-rotary-phone-rp7jq9p5wp43rrj.github.dev/)
 <div align="center">
 
-<img 
-    src="https://raw.githubusercontent.com/Capstone-Projects-2023-Fall/project-lomo-in-person-gaming-app/2c01aeaecf380ee2e1c633397b02566d3d5a2787/documentation/static/img/lomo-logo-by-carla-delima.svg" 
-    width="200" 
-    alt="LOMO logo by Carla Delima"
-/>
-
 # LOMO In Person Gaming App
-[![LOMO Web App](https://img.shields.io/badge/-LOMO%20Web%20App-blue)](https://lomogaming.netlify.app/)
-[![Documentation Website Link](https://img.shields.io/badge/-Documentation%20Website-4cba20)](https://capstone-projects-2023-fall.github.io/project-lomo-in-person-gaming-app/)
+[![Documentation Website Link](https://img.shields.io/badge/-Documentation%20Website-purple)](https://capstone-projects-2023-fall.github.io/project-lomo-in-person-gaming-app/)
+[![Frontend Netlify Website Link](https://img.shields.io/badge/-Frontend%20Netlify%20Website-blue)](https://lomogaming.netlify.app/)
+[![Backend Website Link](https://img.shields.io/badge/-Backend%20Website-4cba20)](https://hku6k67uqeuabts4pgtje2czy40gldpa.lambda-url.us-east-1.on.aws/)
 
 [![Report Issue on Jira](https://img.shields.io/badge/Report%20Issues-Jira-0052CC?style=flat&logo=jira-software)](https://temple-cis-projects-in-cs.atlassian.net/jira/software/c/projects/LM/issues)
 [![Deploy Docs](https://github.com/ApplebaumIan/tu-cis-4398-docs-template/actions/workflows/deploy.yml/badge.svg)](https://github.com/ApplebaumIan/tu-cis-4398-docs-template/actions/workflows/deploy.yml)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/f2ed186c-f3f0-4d94-aa1d-c1a935d61d7f/deploy-status)](https://app.netlify.com/sites/lomogaming/deploys)
 [![Deploy Backend](https://github.com/Capstone-Projects-2023-Fall/project-lomo-in-person-gaming-app/actions/workflows/deploy-backend.yml/badge.svg)](https://github.com/Capstone-Projects-2023-Fall/project-lomo-in-person-gaming-app/actions/workflows/deploy-backend.yml)
-[![Test Backend](https://github.com/Capstone-Projects-2023-Fall/project-lomo-in-person-gaming-app/actions/workflows/test-backend.yml/badge.svg)](https://github.com/Capstone-Projects-2023-Fall/project-lomo-in-person-gaming-app/actions/workflows/test-backend.yml)
+[![Test Backend](https://github.com/Capstone-Projects-2023-Fall/project-lomo-in-person-gaming-app/actions/workflows/backend-test.yml/badge.svg)](https://github.com/Capstone-Projects-2023-Fall/project-lomo-in-person-gaming-app/actions/workflows/backend-test.yml)
 
-<small>Logo created by <a href="https://github.com/del-cj">Carla Delima</a> ✨</small>
 </div>
 
 - [LOMO In Person Gaming App](#lomo-in-person-gaming-app)
@@ -28,7 +22,7 @@
   - [Background](#background)
   - [Required Resources](#required-resources)
   - [Setup Instructions](#setup-instructions)
-    - [System requirements and prerequisites](#system-requirements-and-prerequisites)
+    - [System requirments and prerequisites](#system-requirments-and-prerequisites)
     - [Setup local machine](#setup-local-machine)
       - [1. Git clone the repo](#1-git-clone-the-repo)
       - [2. Setup frontend](#2-setup-frontend)
@@ -70,7 +64,7 @@ A background/understanding of web app development would be required. For softwar
 
 Instructions on how to setup a local instance of the app.
 
-### System requirements and prerequisites
+### System requirments and prerequisites
 **Any of these operating systems should work for development:**
 - Windows 10 and above, or any Windows version that can run WSL2 and Docker Desktop 4+
 - Ubuntu 22.04.3 LTS (Jammy Jellyfish) and above
@@ -144,11 +138,9 @@ git clone https://github.com/Capstone-Projects-2023-Fall/project-lomo-in-person-
         ```bash
         # enter the docker container command line as the root user
         ./vendor/bin/sail root-shell
-        ```
-        
-        ```bash
+
         # recursively change permissions on storage to allow read,write,execute for owner and group
-        chmod -R 777 storage/
+        chmod -R 775 storage/
 
         # recursively change owner and group to root
         chown -R root:root storage/
@@ -159,9 +151,18 @@ git clone https://github.com/Capstone-Projects-2023-Fall/project-lomo-in-person-
         # clear the cache and config
         php artisan cache:clear
         php artisan config:clear
-        
-        # exit the docker container command line
-        exit
+        ```  
+    3. **PROBLEM:** If you get a permissions error *specifically* for the `storage/logs/laravel.log` file. Run the commands below one at a time, in order:
+        ```bash
+        # enter the docker container command line as the root user
+        ./vendor/bin/sail root-shell
+
+        # change the permissions for storage/logs/laravel.log to allow read,write for other
+        chmod o+rw storage/logs/laravel.log
+
+        # clear the cache and config
+        php artisan cache:clear
+        php artisan config:clear
         ```
 
 To stop the container: from your terminal, run `./vendor/bin/sail down`
@@ -188,16 +189,12 @@ Add this line to your `~/.bashrc` or `~/.zshrc` in your home directory:
 1. **Start the backend server**
    ```bash
    cd backend
-   ```
-   ```bash
    ./vendor/bin/sail up -d
    ```
 2. **Start frontend server**
     Use build files, otherwise development server can sometimes cause Beacon display issues.
    ```bash
    cd ../frontend
-   ```
-   ```bash
    npm run build
    serve -s build
    ```
@@ -215,12 +212,10 @@ Go into the `documentation/` folder and run:
 
 ```bash
 cd documentation
-```
-```bash
 yarn start-lomo
 
 # or use the long form
-# PROJECT_NAME=project-lomo-in-person-gaming-app ORG_NAME=Capstone-Projects-2023-Fall yarn start
+PROJECT_NAME=project-lomo-in-person-gaming-app ORG_NAME=Capstone-Projects-2023-Fall yarn start
 ```
 
 ## Collaborators

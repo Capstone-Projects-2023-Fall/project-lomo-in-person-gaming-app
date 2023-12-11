@@ -13,20 +13,29 @@ use App\Models\Attendee;
 
 class AttendeeControllerTest extends TestCase
 {
+    public User $user;
+    public Beacon $beacon;
+
     /**
      * A basic feature test example.
      */
-     public function setUp(): void
-     {
-         parent::setUp(); // required
- 
-         // setup code begins here
- 
-         // mock authentication for sanctum
-         $this->user = User::factory()->create(); // create a mock user
-         $this->actingAs($this->user, 'sanctum'); // create a mock token from sanctum
+    public function setUp(): void
+    {
+        parent::setUp(); // required
 
-              // create a mock beacon JSON replacing coordinates with latitude and longitude
+        // setup code begins here
+
+        // mock authentication for sanctum
+        $this->user = User::factory()->create(); // create a mock user
+        $this->actingAs($this->user, 'sanctum'); // create a mock token from sanctum
+
+        // make api calls from frontend url's
+        $this->withHeaders([
+            'HTTP_ORIGIN' => 'https://lomogaming.netlify.app',
+            'Accept' => 'application/json'
+        ]);
+
+        // create a mock beacon JSON replacing coordinates with latitude and longitude
         $this->beacon = Beacon::factory()->make([
             'host_id' => $this->user->id
         ]);
@@ -35,7 +44,7 @@ class AttendeeControllerTest extends TestCase
         $this->beacon['longitude'] = "1.000000"; // add longitude field
 
         Event::fake([AttendeeCreate::class]);
-     }
+    }
 
     public function test_get_all_attendees(): void
     {
@@ -45,7 +54,7 @@ class AttendeeControllerTest extends TestCase
         $user2 = User::factory()->create();
         $attendee1 = Attendee::create(['beacon_id' => $beacon1->id, 'user_id' => $user1->id, 'controllers_brought' => 3]);
         $attendee2 = Attendee::create(['beacon_id' => $beacon2->id, 'user_id' => $user2->id, 'controllers_brought' => 1]);
-        $response = $this->call('GET','api/attendees');
+        $response = $this->call('GET', 'api/attendees');
         $response->assertStatus(200);
     }
 
@@ -65,14 +74,13 @@ class AttendeeControllerTest extends TestCase
         $attendee = [
             'beacon_id' => $beacon->id,
             'user_id' => $user->id,
-            'controllers_brought' => 3,
-            'isHost' => false
+            'controllers_brought' => 3
         ];
         $response = $this->postJson('/api/attendees', $attendee);
         $response->assertStatus(201);
     }
 
-    public function test_update_attendee(): void  
+    public function test_update_attendee(): void
     {
         $beacon = Beacon::factory()->create();
         $user = User::factory()->create();
@@ -84,7 +92,7 @@ class AttendeeControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_show_attendee(): void 
+    public function test_show_attendee(): void
     {
         $beacon = Beacon::factory()->create();
         $user = User::factory()->create();

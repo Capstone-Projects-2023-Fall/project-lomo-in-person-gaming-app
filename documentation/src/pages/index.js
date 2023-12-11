@@ -19,7 +19,7 @@ function HomepageHeader() {
             className="button button--secondary button--lg"
             to="https://lomogaming.netlify.com"
           >
-            LOMO Web App
+            LOMO Website
           </Link>
         </div>
       </div>

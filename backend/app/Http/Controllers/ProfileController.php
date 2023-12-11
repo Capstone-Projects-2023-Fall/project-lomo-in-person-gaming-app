@@ -2,21 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileStoreRequest;
-use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\Request;
 use App\Models\Profile;
 
 class ProfileController extends Controller
 {
-    /**
-     * Retrieve all profiles from the database.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     * @lrd:start
-     * Get an array of all profiles.
-     * @lrd:end
-     */
     public function index()
     {
         // Retrieve all profiles from the database
@@ -25,14 +15,6 @@ class ProfileController extends Controller
         return response()->json(['data' => $profiles], 200);
     }
 
-    /**
-     * @lrd:start
-     * Find and display the profile by user ID.
-     * @lrd:end
-     *
-     * @param  int  $userId
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function show($userId)
     {
         // Find the profile by user ID
@@ -45,16 +27,7 @@ class ProfileController extends Controller
         return response()->json(['data' => $profile], 200);
     }
 
-    /**
-     * @lrd:start
-     * Update the profile with the specified user ID.
-     * @lrd:end
-     *
-     * @param  Request  $request
-     * @param  int  $userId
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function update(ProfileUpdateRequest $request, $userId)
+    public function update(Request $request, $userId)
     {
         // Find the profile by user ID
         $profile = Profile::where('user_id', $userId)->first();
@@ -74,14 +47,6 @@ class ProfileController extends Controller
         return response()->json(['message' => 'Profile updated successfully', 'data' => $profile], 200);
     }
 
-    /**
-     * @lrd:start
-     * Delete the profile with the specified user ID.
-     * @lrd:end
-     *
-     * @param  int  $userId
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function destroy($userId)
     {
         // Find the profile by user ID
@@ -95,15 +60,7 @@ class ProfileController extends Controller
         return response()->json(['message' => 'Profile deleted successfully'], 200);
     }
 
-    /**
-     * @lrd:start
-     * Create a new profile with the specified user ID.
-     * @lrd:end
-     *
-     * @param  Request  $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function store(ProfileStoreRequest $request)
+    public function store(Request $request)
     {
         // Validate the request data
         $validatedData = $request->validate([
