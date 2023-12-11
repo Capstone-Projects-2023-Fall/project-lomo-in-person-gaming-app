@@ -3,12 +3,12 @@ import { useAuth } from "../../AuthContext.js";
 
 const GetBeaconById = (id) => {
   const { authUser } = useAuth();
-  const [beaconList, setBeaconList] = useState([]);
+  const [beaconData, setBeaconData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       // define url and headers
-      let url = `https://hku6k67uqeuabts4pgtje2czy40gldpa.lambda-url.us-east-1.on.aws/api/beacons/${id}`;
+      let url = `http://localhost/api/beacons/${id}`;
       let options = {
         method: "GET",
         headers: {
@@ -28,9 +28,7 @@ const GetBeaconById = (id) => {
 
         // Parse the response as JSON and return it
         const data = await response.json();
-        console.log("single beacon response status: ", response.status);
-        console.log("single beacon data retrieved: ", data.data);
-        setBeaconList(data.data);
+        setBeaconData(data.data);
       } catch (error) {
         console.error("Error fetching data:", error);
         // You might want to throw the error or handle it in some way
@@ -39,9 +37,9 @@ const GetBeaconById = (id) => {
     };
 
     fetchData();
-  }, [authUser]); // Add authUser as a dependency if needed
+  }, [id, authUser]); // Add authUser as a dependency if needed
 
-  return beaconList;
+  return beaconData;
 };
 
 export default GetBeaconById;

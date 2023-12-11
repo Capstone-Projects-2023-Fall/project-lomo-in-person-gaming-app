@@ -30,7 +30,7 @@ function LocationSearch({ returnValue }) {
   return (
     <div>
       <div className="my-2">
-        <Autocomplete onPlaceChanged={onPlaceChanged} onLoad={onLoad}>
+        <Autocomplete onPlaceChanged={onPlaceChanged} onLoad={onLoad} >
           <input
             type="text"
             placeholder="Where are we playing?"

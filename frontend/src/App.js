@@ -14,10 +14,11 @@ import HomePage from "./HomePage.js";
 import BeaconApplication from "./components/BeaconApplication/BeaconApplication.js";
 import BeaconCreation from "./components/BeaconCreation/BeaconCreation.js";
 import NavBar from "./components/NavBar/NavBar.jsx";
-import ListView from './components/BeaconInfo/ListBeaconInfo.js';
+import ListView from "./components/BeaconInfo/ListBeaconInfo.js";
 import useEchoStore from "./useEchoStore.js";
 import Echo from "laravel-echo"; // eslint-disable-next-line
 import Pusher from "pusher-js"; // used behind the scenes by the new Echo function
+import ModifyBeacon from "./components/BeaconInfo/ModifyBeacon.js";
 
 function App() {
   const { isLoggedIn } = useAuth();
@@ -92,19 +93,28 @@ function App() {
       {showModal && (
         <div className="fixed z-10 inset-0 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
-            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div
+              className="fixed inset-0 transition-opacity"
+              aria-hidden="true"
+            >
               <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
             </div>
             <div className="inline-block align-bottom bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle min-w-lg w-full max-w-xl">
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <h2 className="text-3xl text-center leading-6 font-bold text-black">Warning</h2>
+                <h2 className="text-3xl text-center leading-6 font-bold text-black">
+                  Warning
+                </h2>
                 <div className="mt-2 text-xl font-semibold text-center pt-4 text-black">
                   <p>Beacons are visible to everyone</p>
                   <p>Share your address at your own risk</p>
                 </div>
               </div>
               <div className="flex justify-center px-4 py-3 sm:px-6">
-                <button onClick={() => setShowModal(false)} type="button" className="w-full inline-flex justify-center rounded-full border border-transparent shadow-sm mb-4 px-20 py-4 bg-sky-600 text-lg font-medium text-white hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto">
+                <button
+                  onClick={() => setShowModal(false)}
+                  type="button"
+                  className="w-full inline-flex justify-center rounded-full border border-transparent shadow-sm mb-4 px-20 py-4 bg-sky-600 text-lg font-medium text-white hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto"
+                >
                   Got it
                 </button>
               </div>
@@ -113,7 +123,10 @@ function App() {
         </div>
       )}
       <Router>
-        <LoadScript googleMapsApiKey={apiKey} libraries={["places", "geometry"]}>
+        <LoadScript
+          googleMapsApiKey={apiKey}
+          libraries={["places", "geometry"]}
+        >
           <NavBar />
           <Routes>
             <Route
@@ -124,39 +137,33 @@ function App() {
               path="/signup"
               element={isLoggedIn ? <Navigate to="/" /> : <Signup />}
             />
-            <Route 
-              path='/beaconlist' 
-              element={isLoggedIn ? <ListView /> : <Navigate to='/login' />} 
+            <Route
+              path="/beaconlist"
+              element={isLoggedIn ? <ListView /> : <Navigate to="/login" />}
             />
             <Route
               path="/createbeacon"
               element={
-                isLoggedIn ? (
-                  <BeaconCreation />
-                ) : (
-                  <Navigate to="/login" />
-                )
+                isLoggedIn ? <BeaconCreation /> : <Navigate to="/login" />
               }
             />
             <Route
               path="/joinbeacon/"
               element={
-                isLoggedIn ? (
-                  <BeaconApplication />
-                ) : (
-                  <Navigate to="/login" />
-                )
+                isLoggedIn ? <BeaconApplication /> : <Navigate to="/login" />
               }
             />
             <Route
+              path="/editbeacon/"
+              element={isLoggedIn ? <ModifyBeacon /> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/editbeacon/"
+              element={isLoggedIn ? <ModifyBeacon /> : <Navigate to="/login" />}
+            />
+            <Route
               path="/"
-              element={
-                isLoggedIn ? (
-                  <HomePage />
-                ) : (
-                  <Navigate to="/login" />
-                )
-              }
+              element={isLoggedIn ? <HomePage /> : <Navigate to="/login" />}
             />
           </Routes>
         </LoadScript>
