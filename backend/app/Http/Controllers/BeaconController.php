@@ -82,6 +82,9 @@ class BeaconController extends Controller
                 'isHost' => $attendee->isHost,
             ];
         });
+
+        return response()->json(['data' => $beaconInfo], 200);
+
     }
 
     /**
