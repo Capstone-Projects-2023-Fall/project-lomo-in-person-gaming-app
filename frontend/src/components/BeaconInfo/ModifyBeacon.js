@@ -1,33 +1,87 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs/AdapterDayjs.js";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker/DateTimePicker.js";
 import { useAuth } from "../../AuthContext.js";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { debounce } from "lodash";
-import LocationSearch from "./LocationSearch.js";
+import LocationSearch from "../BeaconCreation/LocationSearch.js";
 import { useLoadScript } from "@react-google-maps/api";
-import GetGameByName from "./GetGameByName.js";
+import GetGameByName from "../BeaconCreation/GetGameByName.js";
+import GetBeaconById from "./GetBeaconById.js";
+import dayjs from "dayjs";
 
-function BeaconCreation() {
-  const [game, setGame] = useState(""); //game_title
-  const [gameConsole, setConsole] = useState(""); //console
-  const [description, setDesc] = useState(""); //description
-  const [placeName, setPlaceName] = useState(""); //place_name
-  const [address, setAddress] = useState(""); //address_street
-  const [latitude, setLatitude] = useState(""); // latitude
-  const [longitude, setLongitude] = useState(""); // longitude
-  const [players, setPlayers] = useState(""); //player_wanted
-  const [timeFrom, setFrom] = useState(""); //start_date_time
-  const [timeTo, setTo] = useState(""); //end_date_time
-  const [totalControllers, setTotalControllers] = useState(""); //controllers_wanted
-  const [hostControllers, setHostControllers] = useState(""); // how many controllers the host has
+const ConfirmationModal = ({ message, onConfirm, onCancel }) => {
+  return (
+    <div
+      className={`fixed inset-0 bg-sky-900 bg-opacity-50 flex items-center justify-center`}
+    >
+      <div className="bg-white p-4 rounded shadow-lg">
+        <p className="mb-4">{message}</p>
+        <div className="flex justify-center space-x-2">
+          <button
+            className="border-2 border-sky-900 rounded p-2"
+            onClick={onCancel}
+          >
+            Cancel
+          </button>
+          <button
+            className="bg-sky-900 text-white rounded p-2"
+            onClick={onConfirm}
+          >
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ModifyBeacon = () => {
+  const queryParams = new URLSearchParams(useLocation().search);
+  const beaconId = queryParams.get("beacon_id");
+
+  const [isModalOpen, setIsModalOpen] = useState(null);
+  const oldBeaconData = GetBeaconById(beaconId);
   const { authUser, userId } = useAuth();
-  const [autocompleteResults, setAutocompleteResults] = useState([]);
   const [gameName, setGameName] = useState("");
-  const [selectedGame, setSelectedGame] = useState(null);
+  const [gameImg, setGameImg] = useState("");
+  const [gameConsole, setConsole] = useState("");
+  const [description, setDesc] = useState("");
+  const [players, setPlayers] = useState("");
+  const [totalControllers, setTotalControllers] = useState("");
+  const [hostControllers, setHostControllers] = useState("");
+  const [placeName, setPlaceName] = useState("");
+  const [address, setAddress] = useState("");
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
+  const [timeFrom, setFrom] = useState("");
+  const [timeTo, setTo] = useState("");
+  const [autocompleteResults, setAutocompleteResults] = useState([]);
+  const [selectedGame, setSelectedGame] = useState({
+    name: "",
+    image: "",
+  });
   const [clickedGameId, setClickedGameId] = useState(null);
   const [isInputFocused, setInputFocused] = useState(false);
+
+  useEffect(() => {
+    if (oldBeaconData) {
+      setGameName(oldBeaconData.game_title || "");
+      setGameImg(oldBeaconData.game_image);
+      setConsole(oldBeaconData.console || "");
+      setDesc(oldBeaconData.description || "");
+      setPlayers(oldBeaconData.players_wanted || "");
+      setTotalControllers(oldBeaconData.controllers_wanted || "");
+      setHostControllers(oldBeaconData.host_controllers || "");
+      setPlaceName(oldBeaconData.place_name || "");
+      setAddress(oldBeaconData.street_address || "");
+      setLatitude(oldBeaconData.latitude || "");
+      setLongitude(oldBeaconData.longitude || "");
+      setFrom(oldBeaconData.start_date_time ? dayjs(oldBeaconData.start_date_time): null);
+      setTo(oldBeaconData.end_date_time ? dayjs(oldBeaconData.end_date_time) : null);
+    }
+  }, [oldBeaconData]);
 
   const handleInputChange = (e) => {
     const gameNameValue = e.target.value;
@@ -79,11 +133,57 @@ function BeaconCreation() {
     setTo("");
   }
 
+  const handleOpenModal = () => {
+    console.log(isModalOpen);
+    console.log("Modal opened");
+    setIsModalOpen(true);
+    console.log(isModalOpen);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleConfirmAction = async () => {
+    console.log("Confirmed action");
+
+    // define url and headers
+    let url = `https://hku6k67uqeuabts4pgtje2czy40gldpa.lambda-url.us-east-1.on.aws/api/beacons/${beaconId}`;
+    let options = {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: "Bearer " + authUser,
+      },
+    };
+    try {
+      // make api call
+      const response = await fetch(url, options);
+
+      // Check if the response is ok
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      throw error;
+    }
+    handleCloseModal();
+  };
+
+  const handleCancelAction = () => {
+    console.log(isModalOpen);
+    console.log("Canceled action");
+    setIsModalOpen(false);
+    console.log(isModalOpen);
+  };
+
   function onClose() {
     let data = {
       host_id: userId,
-      game_title: selectedGame.name,
-      game_image: selectedGame.image,
+      game_title: selectedGame.name || oldBeaconData.game_title,
+      game_image: selectedGame.image || oldBeaconData.game_image,
       console: gameConsole,
       description: description,
       start_date_time: timeFrom,
@@ -94,15 +194,14 @@ function BeaconCreation() {
       longitude: longitude,
       players_wanted: players,
       controllers_wanted: totalControllers,
-      controllers_brought: hostControllers
+      controllers_brought: hostControllers,
     };
     console.log(data);
 
     // define url and headers
-    let url =
-      "https://hku6k67uqeuabts4pgtje2czy40gldpa.lambda-url.us-east-1.on.aws/api/beacons";
+    let url = `https://hku6k67uqeuabts4pgtje2czy40gldpa.lambda-url.us-east-1.on.aws/api/beacons/${beaconId}`;
     let options = {
-      method: "POST",
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -117,7 +216,7 @@ function BeaconCreation() {
         response.json().then((data) => {
           console.log("Attempt post beacon api, result", data);
           if (response.ok) {
-            displayText("Beacon Confirmed!");
+            displayText("Beacon Successfully Modified!");
           }
         })
       )
@@ -134,6 +233,7 @@ function BeaconCreation() {
         <div className="flex-col w-full p-1 md:p-2">
           Game Name:
           <input
+            defaultValue={oldBeaconData.game_title}
             value={gameName}
             onChange={handleInputChange}
             onFocus={() => setInputFocused(true)}
@@ -178,6 +278,7 @@ function BeaconCreation() {
         <div className="flex-col w-full p-1 md:p-2">
           Game Console:
           <input
+            defaultValue={oldBeaconData.console}
             value={gameConsole}
             onChange={(e) => {
               setConsole(e.target.value);
@@ -191,6 +292,7 @@ function BeaconCreation() {
       <div className="flex-col w-full p-1 md:p-2">
         Description:
         <textarea
+          defaultValue={oldBeaconData.description}
           value={description}
           onChange={(e) => {
             setDesc(e.target.value);
@@ -204,6 +306,7 @@ function BeaconCreation() {
         <div className="flex-col w-full p-1 md:p-2">
           Players:
           <input
+            defaultValue={oldBeaconData.players_wanted}
             value={players}
             onChange={(e) => {
               setPlayers(e.target.value);
@@ -214,22 +317,26 @@ function BeaconCreation() {
         </div>
         <div className="flex-col w-full p-1 md:p-2">
           Controllers:
-          <input
-            value={totalControllers}
-            onChange={(e) => {
-              setTotalControllers(e.target.value);
-            }}
-            placeholder="How many are needed?"
-            className="p-1 border-teal-100 border-2 rounded w-full"
-          />
-          <input
-            value={hostControllers}
-            onChange={(e) => {
-              setHostControllers(e.target.value);
-            }}
-            placeholder="How many do you have?"
-            className="p-1 mt-2 border-teal-100 border-2 rounded w-full"
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 space-x-2">
+            <input
+              defaultValue={oldBeaconData.controllers_wanted}
+              value={totalControllers}
+              onChange={(e) => {
+                setTotalControllers(e.target.value);
+              }}
+              placeholder="How many controllers are needed?"
+              className="p-1 border-teal-100 border-2 rounded w-full"
+            />
+            <input
+              defaultValue={oldBeaconData.host_controllers}
+              value={hostControllers}
+              onChange={(e) => {
+                setHostControllers(e.target.value);
+              }}
+              placeholder="How many controllers do you have?"
+              className="p-1 border-teal-100 border-2 rounded w-full"
+            />
+          </div>
         </div>
       </div>
 
@@ -271,21 +378,28 @@ function BeaconCreation() {
       <div className="flex flex-row space-x-2 mt-3 justify-center">
         <Link to="/">
           <button className="font-bold relative bg-sky-400 py-1 px-1 rounded">
-            Close
+            Cancel
           </button>
         </Link>
 
         <button
           className="font-bold relative bg-red-500 py-1 px-1 rounded"
-          onClick={clearForm}
+          onClick={handleOpenModal}
         >
-          Clear
+          Delete Beacon
         </button>
+        {isModalOpen && (
+          <ConfirmationModal
+            message="Are you sure you want to delete this beacon?"
+            onConfirm={handleConfirmAction}
+            onCancel={handleCancelAction}
+          />
+        )}
         <button
           className="font-bold  bg-teal-500 py-1 px-1 rounded"
           onClick={onClose}
         >
-          Confirm
+          Save Changes
         </button>
         <div
           className="font-bold relative py-1 px-1 rounded float-right"
@@ -294,6 +408,6 @@ function BeaconCreation() {
       </div>
     </div>
   );
-}
+};
 
-export default BeaconCreation;
+export default ModifyBeacon;
