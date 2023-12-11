@@ -2,25 +2,23 @@
 
 namespace Tests\Feature;
 
+use App\Events\AttendeeCreate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Event;
-use App\Events\AttendeeCreate;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Beacon;
 use App\Models\Attendee;
+use Illuminate\Support\Facades\Event;
 
-class AttendeeControllerTest extends TestCase
-{
+class AttendeeControllerTest extends TestCase {
     public User $user;
     public Beacon $beacon;
 
     /**
      * A basic feature test example.
      */
-    public function setUp(): void
-    {
+    public function setUp(): void {
         parent::setUp(); // required
 
         // setup code begins here
@@ -46,8 +44,7 @@ class AttendeeControllerTest extends TestCase
         Event::fake([AttendeeCreate::class]);
     }
 
-    public function test_get_all_attendees(): void
-    {
+    public function test_get_all_attendees(): void {
         $beacon1 = Beacon::factory()->create();
         $beacon2 = Beacon::factory()->create();
         $user1 = User::factory()->create();
@@ -58,8 +55,7 @@ class AttendeeControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_delete_attendee(): void
-    {
+    public function test_delete_attendee(): void {
         $user_id = User::factory()->create();
         $beacon_id = Beacon::factory()->create();
         $attendee = Attendee::create(['beacon_id' => $beacon_id->id, 'user_id' => $user_id->id, 'controllers_brought' => 3]);
@@ -67,8 +63,7 @@ class AttendeeControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_store_attendee(): void
-    {
+    public function test_store_attendee(): void {
         $beacon = Beacon::factory()->create();
         $user = User::factory()->create();
         $attendee = [
@@ -80,8 +75,7 @@ class AttendeeControllerTest extends TestCase
         $response->assertStatus(201);
     }
 
-    public function test_update_attendee(): void
-    {
+    public function test_update_attendee(): void {
         $beacon = Beacon::factory()->create();
         $user = User::factory()->create();
         $attendee = Attendee::create(['beacon_id' => $beacon->id, 'user_id' => $user->id, 'controllers_brought' => 3]);
@@ -92,8 +86,7 @@ class AttendeeControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_show_attendee(): void
-    {
+    public function test_show_attendee(): void {
         $beacon = Beacon::factory()->create();
         $user = User::factory()->create();
         $attendee = Attendee::create(['beacon_id' => $beacon->id, 'user_id' => $user->id, 'controllers_brought' => 1]);
